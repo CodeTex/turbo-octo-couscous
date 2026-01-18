@@ -1,5 +1,7 @@
 import asyncio
 from pathlib import Path
+from datetime import datetime, timedelta
+import random
 
 import aiosqlite
 
@@ -12,6 +14,7 @@ async def seed_data():
         return
 
     async with aiosqlite.connect(db_path) as conn:
+        await conn.execute("DELETE FROM readings")
         await conn.execute("DELETE FROM sensors")
         await conn.execute("DELETE FROM machines")
         await conn.execute("DELETE FROM factories")
@@ -71,8 +74,26 @@ async def seed_data():
         )
         await conn.commit()
 
+        readings = []
+        now = datetime.utcnow()
+        for sensor_id in range(1, len(sensors) + 1):
+            sensor = sensors[sensor_id - 1]
+            min_val = sensor[3] if sensor[3] is not None else 0
+            max_val = sensor[4] if sensor[4] is not None else 100
+
+            for i in range(20):
+                timestamp = now - timedelta(hours=20 - i)
+                value = random.uniform(min_val, max_val)
+                readings.append((sensor_id, value, timestamp.isoformat()))
+
+        await conn.executemany(
+            "INSERT INTO readings (sensor_id, value, timestamp) VALUES (?, ?, ?)",
+            readings,
+        )
+        await conn.commit()
+
         print(
-            f"✓ Seeded {len(factories)} factories, {len(machines)} machines, and {len(sensors)} sensors"
+            f"✓ Seeded {len(factories)} factories, {len(machines)} machines, {len(sensors)} sensors, and {len(readings)} readings"
         )
 
 

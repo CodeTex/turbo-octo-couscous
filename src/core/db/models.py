@@ -40,3 +40,15 @@ class Sensor(SQLModel, table=True):
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
     machine: Machine = Relationship(back_populates="sensors")
+    readings: list["Reading"] = Relationship(back_populates="sensor")
+
+
+class Reading(SQLModel, table=True):
+    __tablename__ = "readings"
+
+    id: int | None = Field(default=None, primary_key=True)
+    sensor_id: int = Field(foreign_key="sensors.id", index=True)
+    value: float
+    timestamp: datetime = Field(default_factory=datetime.utcnow, index=True)
+
+    sensor: Sensor = Relationship(back_populates="readings")
