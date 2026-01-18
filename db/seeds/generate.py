@@ -15,6 +15,7 @@ async def seed_data():
         await conn.execute("DELETE FROM sensors")
         await conn.execute("DELETE FROM machines")
         await conn.execute("DELETE FROM factories")
+        await conn.execute("DELETE FROM sqlite_sequence")
         await conn.commit()
 
         factories = [
