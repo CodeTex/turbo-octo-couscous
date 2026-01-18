@@ -1,0 +1,12 @@
+-- Add machines table
+CREATE TABLE IF NOT EXISTS machines (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	factory_id INTEGER NOT NULL,
+	name TEXT NOT NULL,
+	type TEXT NOT NULL,
+	status TEXT NOT NULL DEFAULT 'OPERATIONAL',
+	created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	FOREIGN KEY (factory_id) REFERENCES factories(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_machines_factory_id ON machines(factory_id);

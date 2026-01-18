@@ -3,11 +3,15 @@ from robyn import Robyn
 from api.config import settings
 from api.routers.health import health_router
 from api.routers.factories import factories_router
+from api.routers.machines import machines_router
+from api.routers.sensors import sensors_router
 from core.db.engine import init_db
 
 app = Robyn(__file__)
 app.include_router(health_router)
 app.include_router(factories_router)
+app.include_router(machines_router)
+app.include_router(sensors_router)
 
 
 @app.get("/")

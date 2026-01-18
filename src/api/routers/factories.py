@@ -14,6 +14,17 @@ async def list_factories(request):
         return [FactoryResponse.model_validate(f).model_dump() for f in factories]
 
 
+@factories_router.get("/:factory_id")
+async def get_factory(request):
+    factory_id = int(request.path_params["factory_id"])
+
+    async with AsyncSessionLocal() as session:
+        factory = await factory_svc.get_factory_by_id(session, factory_id)
+        if not factory:
+            return {"error": "Factory not found"}
+        return FactoryResponse.model_validate(factory).model_dump()
+
+
 @factories_router.post("/")
 async def create_factory(request):
     body = request.body
@@ -31,5 +42,5 @@ async def delete_factory(request):
     async with AsyncSessionLocal() as session:
         deleted = await factory_svc.delete_factory(session, factory_id)
         if not deleted:
-            return {"error": "Factory not found"}, 404
+            return {"error": "Factory not found"}
         return {"message": "Factory deleted", "id": factory_id}
