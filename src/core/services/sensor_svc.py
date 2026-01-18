@@ -1,7 +1,7 @@
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.db.models import Sensor
+from core.db.models import Sensor, Reading
 from core.schemas.sensor import SensorCreate
 
 
@@ -33,3 +33,41 @@ async def delete_sensor(session: AsyncSession, sensor_id: int) -> bool:
     await session.delete(sensor)
     await session.commit()
     return True
+
+
+async def get_sensor_stats(session: AsyncSession, sensor_id: int) -> dict | None:
+    sensor = await get_sensor_by_id(session, sensor_id)
+    if not sensor:
+        return None
+
+    result = await session.execute(
+        select(
+            func.min(Reading.value).label("min"),
+            func.max(Reading.value).label("max"),
+            func.avg(Reading.value).label("avg"),
+            func.count(Reading.id).label("count"),
+        ).where(Reading.sensor_id == sensor_id)
+    )
+    row = result.first()
+
+    return {
+        "sensor_id": sensor_id,
+        "min": row.min,
+        "max": row.max,
+        "avg": round(row.avg, 2) if row.avg else None,
+        "count": row.count,
+    }
+
+
+async def get_sensor_latest_reading(session: AsyncSession, sensor_id: int) -> Reading | None:
+    sensor = await get_sensor_by_id(session, sensor_id)
+    if not sensor:
+        return None
+
+    result = await session.execute(
+        select(Reading)
+        .where(Reading.sensor_id == sensor_id)
+        .order_by(Reading.timestamp.desc())
+        .limit(1)
+    )
+    return result.scalar_one_or_none()
