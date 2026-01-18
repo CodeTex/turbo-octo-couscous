@@ -2,9 +2,12 @@ from robyn import Robyn
 
 from api.config import settings
 from api.routers.health import health_router
+from api.routers.factories import factories_router
+from core.db.engine import init_db
 
 app = Robyn(__file__)
 app.include_router(health_router)
+app.include_router(factories_router)
 
 
 @app.get("/")
@@ -18,6 +21,7 @@ async def root():
 
 @app.startup_handler
 async def startup():
+    await init_db()
     print(f"Starting API on {settings.host}:{settings.port}")
 
 

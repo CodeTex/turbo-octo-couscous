@@ -9,6 +9,14 @@ install:
 run:
 	uv run python -m api.main
 
+# Run database migrations
+migrate:
+	uv run python db/migrate.py
+
+# Seed database with test data
+seed:
+	uv run python db/seeds/generate.py
+
 # Run tests
 test:
 	uv run pytest tests/
