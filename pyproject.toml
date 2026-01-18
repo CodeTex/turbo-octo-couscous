@@ -6,9 +6,52 @@ readme = "README.md"
 authors = [
     { name = "CodeTex", email = "29424456+CodeTex@users.noreply.github.com" }
 ]
-requires-python = ">=3.14"
-dependencies = []
+requires-python = "~=3.13.11"
+dependencies = [
+    "aiosqlite>=0.22.1",
+    "httpx>=0.28.1",
+    "pydantic>=2.12.5",
+    "pydantic-settings>=2.12.0",
+    "robyn>=0.74.0",
+    "sqlmodel>=0.0.31",
+]
 
 [build-system]
-requires = ["uv_build>=0.9.26,<0.10.0"]
-build-backend = "uv_build"
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[dependency-groups]
+dev = [
+    "maturin>=1.11.5",
+    "ruff>=0.14.13",
+    "ty>=0.0.12",
+]
+test = [
+    "pytest>=9.0.2",
+    "pytest-asyncio>=1.3.0",
+    "pytest-benchmark>=5.2.3",
+    "pytest-cov>=7.0.0",
+    "pytest-lazy-fixture>=0.6.3",
+    "pytest-mock>=3.15.1",
+    "pytest-sugar>=1.1.1",
+    "pytest-xdist>=3.8.0",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py314"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "tab"
+docstring-code-format = false
+
+[tool.ruff.lint]
+select = ["A", "B", "E", "F", "I", "N", "W", "UP"]
+ignore = ["E501"]
+
+[tool.coverage.run]
+omit = ["tests/*"]
