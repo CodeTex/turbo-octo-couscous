@@ -71,3 +71,23 @@ async def get_sensor_latest_reading(session: AsyncSession, sensor_id: int) -> Re
         .limit(1)
     )
     return result.scalar_one_or_none()
+
+
+async def get_sensor_readings(
+    session: AsyncSession, sensor_id: int, limit: int | None = None
+) -> list[Reading]:
+    """Get all readings for a sensor, optionally limited to most recent N readings."""
+    sensor = await get_sensor_by_id(session, sensor_id)
+    if not sensor:
+        return []
+
+    query = select(Reading).where(Reading.sensor_id == sensor_id).order_by(Reading.timestamp.desc())
+
+    if limit:
+        query = query.limit(limit)
+
+    result = await session.execute(query)
+    readings = list(result.scalars().all())
+
+    # Return in chronological order (oldest first) for analysis
+    return list(reversed(readings))

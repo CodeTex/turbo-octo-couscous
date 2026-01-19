@@ -18,7 +18,7 @@ build-release:
 
 # Run API server (requires: just install, just migrate, just seed)
 run:
-	uv run python -m api.main
+	.venv/bin/python -m api.main
 
 # Run anomaly-detector HTTP service on port 3001
 run-anomaly:
