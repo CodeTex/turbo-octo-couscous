@@ -37,10 +37,15 @@ just run
 # Terminal 2: Run Rust anomaly service (port 3001)
 just run-anomaly
 
-# Test the integration
+# Terminal 3: Test the integration
 curl http://localhost:8080/api/sensors/1/anomalies
 curl http://localhost:8080/api/sensors/1/alerts
+
+# Or run automated tests
+just test-integration
 ```
+
+See [TESTING.md](TESTING.md) for detailed testing instructions.
 
 ## Architecture
 

@@ -24,6 +24,11 @@ run:
 run-anomaly:
 	cargo run -p anomaly-detector
 
+# Stop all running services
+stop:
+	@pkill -f "anomaly-detector" || echo "No anomaly-detector running"
+	@pkill -f "api.main" || echo "No Python API running"
+
 # Run database migrations
 migrate:
 	uv run python db/migrate.py
@@ -32,7 +37,7 @@ migrate:
 seed:
 	uv run python db/seeds/generate.py
 
-# Run all tests (Python + Rust)
+# Run all tests (Rust + Python)
 test:
 	cargo test --workspace
 	uv run pytest tests/

@@ -40,6 +40,9 @@ test = [
     "pytest-xdist>=3.8.0",
 ]
 
+[tool.maturin]
+bindings = "pyo3"
+
 [tool.ruff]
 line-length = 100
 target-version = "py314"
@@ -52,5 +55,3 @@ docstring-code-format = false
 select = ["A", "B", "E", "F", "I", "N", "W", "UP"]
 ignore = ["E501"]
 
-[tool.coverage.run]
-omit = ["tests/*"]
