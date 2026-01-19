@@ -1,13 +1,28 @@
 default:
 	@just --list
 
-# Install dependencies
+# Install all dependencies (Python + Rust)
 install:
 	uv sync --all-groups
+	.venv/bin/maturin develop -m crates/threshold-checker/Cargo.toml
 
-# Run API server
+# Build everything (Python + Rust)
+build:
+	cargo build --workspace
+	.venv/bin/maturin develop -m crates/threshold-checker/Cargo.toml
+
+# Build everything in release mode
+build-release:
+	cargo build --workspace --release
+	.venv/bin/maturin develop -m crates/threshold-checker/Cargo.toml --release
+
+# Run API server (requires: just install, just migrate, just seed)
 run:
 	uv run python -m api.main
+
+# Run anomaly-detector HTTP service on port 3001
+run-anomaly:
+	cargo run -p anomaly-detector
 
 # Run database migrations
 migrate:
@@ -17,22 +32,31 @@ migrate:
 seed:
 	uv run python db/seeds/generate.py
 
-# Run tests
+# Run all tests (Python + Rust)
 test:
+	cargo test --workspace
 	uv run pytest tests/
 
-# Format code
+# Format code (Python + Rust)
 fmt:
+	cargo fmt
 	uv run ruff format .
 
-# Lint code
+# Lint code (Python + Rust)
 lint:
+	cargo clippy -- -D warnings
 	uv run ruff check .
 	uv run ty check .
 
-# Clean caches
+# Clean all build artifacts and caches
 clean:
-	rm -rf .pytest_cache/ htmlcov/ .ruff_cache/
+	cargo clean
+	rm -rf .pytest_cache/ htmlcov/ .ruff_cache/ target/
 	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
 	find . -type d -name "*.egg-info" -exec rm -rf {} + 2>/dev/null || true
+
+# Update all dependencies
+update:
+	cargo update
+	uv sync --upgrade
 
