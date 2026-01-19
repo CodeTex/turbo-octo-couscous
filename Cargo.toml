@@ -1,0 +1,6 @@
+[workspace]
+members = [
+    "crates/anomaly-detector",
+    "crates/threshold-checker",
+]
+resolver = "2"
