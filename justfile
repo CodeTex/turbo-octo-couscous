@@ -1,30 +1,31 @@
 default:
 	@just --list
 
-# Install all dependencies (Python + Rust)
+# Install all dependencies (Python + Rust, uv handles maturin build)
 install:
 	uv sync --all-groups
-	.venv/bin/maturin develop -m crates/threshold-checker/Cargo.toml
 
 # Build everything (Python + Rust)
 build:
 	cargo build --workspace
-	.venv/bin/maturin develop -m crates/threshold-checker/Cargo.toml
+	uv sync --reinstall-package turbo-octo-couscous
 
 # Build everything in release mode
 build-release:
 	cargo build --workspace --release
-	.venv/bin/maturin develop -m crates/threshold-checker/Cargo.toml --release
+	uv sync --reinstall-package turbo-octo-couscous
 
 # Run API server (requires: just install, just migrate, just seed)
 run:
-	.venv/bin/python -m api.main
+	uv run python -m api.main
 
 # Run anomaly-detector HTTP service on port 3001
+[no-exit-message]
 run-anomaly:
 	cargo run -p anomaly-detector
 
 # Stop all running services
+[no-exit-message]
 stop:
 	@pkill -f "anomaly-detector" || echo "No anomaly-detector running"
 	@pkill -f "api.main" || echo "No Python API running"

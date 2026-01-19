@@ -17,11 +17,8 @@ dependencies = [
 ]
 
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
-
-[tool.setuptools.packages.find]
-where = ["src"]
+requires = ["maturin>=1.0,<2.0"]
+build-backend = "maturin"
 
 [dependency-groups]
 dev = [
@@ -42,10 +39,20 @@ test = [
 
 [tool.maturin]
 bindings = "pyo3"
+manifest-path = "crates/threshold-checker/Cargo.toml"
+python-source = "src"
+python-packages = ["api", "core"]
 
 [tool.ruff]
 line-length = 100
 target-version = "py314"
+
+[tool.uv]
+cache-keys = [
+    {file = "pyproject.toml"},
+    {file = "crates/threshold-checker/Cargo.toml"},
+    {file = "crates/threshold-checker/src/**/*.rs"}
+]
 
 [tool.ruff.format]
 quote-style = "double"
